@@ -5,10 +5,11 @@ See Palo Alto Posture API Documentation at [pan.dev](https://pan.dev/scm/api/con
 
 ## Key Features
 
-*   **Automated Authentication:** Handles Auth to the SCM OAuth2 endpoint using a Service Account Client ID and Secret.
-*   **GCS V4 Signature Compliance:** Uses `http.client` to execute the XML file upload to satisfy Google Cloud Storage V4 signed URL requirements with required headers. [GCS Signed URLs](https://docs.cloud.google.com/storage/docs/access-control/signed-urls)
-*   **Intelligent Job Polling:** After Upload automatically polls the Strata Cloud Manager Posture API every 10 seconds to track the assessment's progress. It handles various active status states (including `QUEUED`, `RUNNING`, `PROCESSING`, etc.) before completing.
-*   **Dynamic URL Extraction:** Because the Palo Alto API occasionally shifts the final download link between variables, the script aggressively scans the response schema for both `report_url` and `custom_check_url` to guarantee a successful download.
+*   **Authentication:** Handles Auth to the SCM OAuth2 endpoint using a Service Account Client ID and Secret.
+*   **XML Configuration Upload:** Sends PUT to GCS Storage Bucket.
+*   **GCS V4 Signature Compliance:** Uses `http.client` to execute the XML file upload to satisfy Google Cloud Storage V4 signed URL requirements with required headers & mime type. [GCS Signed URLs](https://docs.cloud.google.com/storage/docs/access-control/signed-urls)
+*   **Job Polling:** After Upload automatically polls the Strata Cloud Manager Posture API every 10 seconds to track the assessment's progress. It handles various active status states (including `QUEUED`, `IN_PROGRESS` etc.) before completing.
+*   **URL Extraction:** Because the Palo Alto API occasionally shifts the final download link between variables, the script scans the response schema for both `report_url` and `custom_check_url` for download URL.
 
 ## Prerequisites
 
@@ -42,5 +43,6 @@ python scm_bpa.py
 [1/4] Authenticating: Retrieves the access token from Strata Cloud Manager
 [2/4] Requesting URL: Generates a task ID and secures a signed Google Cloud Storage upload URL
 [3/4] Uploading: Directly PUTs the raw XML configuration into the cloud bucket with strict header matching
-[4/4] Polling & Downloading: Waits for the backend analysis to finish, locates the generated report URL, and saves the final JSON file locally. Typically finishes in 10-40 seconds.
+[4/4] Polling & Downloading: Waits for the backend analysis to finish, locates the generated report URL, and saves the final JSON file locally. 
 ```
+Posture API Typically responds with JSON in 10-40 seconds depending on config size.
